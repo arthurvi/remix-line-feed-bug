@@ -82,6 +82,12 @@ test.beforeAll(async () => {
           return <div>cheeseburger</div>;
         }
       `,
+
+      "app/routes/$.tsx": js`
+        export default function Index() {
+          return <div>Splat route!</div>;
+        }
+      `,
     },
   });
 
@@ -98,22 +104,21 @@ test.afterAll(() => {
 // add a good description for what you expect Remix to do 👇🏽
 ////////////////////////////////////////////////////////////////////////////////
 
-test("[description of what you expect it to do]", async ({ page }) => {
+test("(works) it renders the $.tsx splat rout on /non-existing-route", async ({ page }) => {
   let app = new PlaywrightFixture(appFixture, page);
-  // You can test any request your app might get using `fixture`.
-  let response = await fixture.requestDocument("/");
-  expect(await response.text()).toMatch("pizza");
 
-  // If you need to test interactivity use the `app`
-  await app.goto("/");
-  await app.clickLink("/burgers");
-  await page.waitForSelector("text=cheeseburger");
+  await app.goto("/non-existing-route");
 
-  // If you're not sure what's going on, you can "poke" the app, it'll
-  // automatically open up in your browser for 20 seconds, so be quick!
-  // await app.poke(20);
+  await page.waitForSelector("text=Splat route!");
+});
 
-  // Go check out the other tests to see what else you can do.
+
+test("(bug) it renders the $.tsx splat rout on /%0A", async ({ page }) => {
+  let app = new PlaywrightFixture(appFixture, page);
+
+  await app.goto("/%0A");
+
+  await page.waitForSelector("text=Splat route!");
 });
 
 ////////////////////////////////////////////////////////////////////////////////
